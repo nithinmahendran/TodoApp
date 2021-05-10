@@ -9,3 +9,10 @@ TextStyle todoTitle = new TextStyle(
     fontSize: 64);
 
 Color addButtonColor = new Color(0xff458EFB);
+
+TextStyle darkTodoTitle = new TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w600,
+    color: darkGrey,
+    fontSize: 30
+    );
