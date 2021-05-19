@@ -7,27 +7,25 @@ from flask_sqlalchemy import SQLAlchemy
 ma = Marshmallow()
 db = SQLAlchemy()
 
+
 class User(db.Model):
-    __tablename__ = 'user'
-    __table_args__= tuple(db.UniqueConstraint('id','username',name='nithin'))
-
-
-    id=db.Column(db.String(),primary_key=True,unique=True)
-    apikey=db.Column(db.String(),primary_key=True,unique=True)
-    username=db.Column(db.String(),primary_key=True)
-    first_name=db.Column(db.String())
-    last_name=db.Column(db.String())
-    password=db.Column(db.String())
-    emailaddress=db.Column(db.String())
-
-    def __init__(self,id,apikey,username,first_name,last_name,password,emailaddress):
-        self.id=id
-        self.apikey=apikey
-        self.username=username
-        self.first_name=first_name
-        self.last_name=last_name
+    def __init__(self,firstname,lastname,email,password,username):
+        self.firstname=firstname
+        self.lastname=lastname
+        self.email=email
         self.password=password
-        self.emailaddress=emailaddress
+        self.username=username
+
+    __tablename__ = 'users'
+
+    id=db.Column(db.Integer(),primary_key=True,unique=True)
+    # api_key=db.Column(db.String(),primary_key=True,unique=True)
+    username=db.Column(db.String(),unique=True)
+    firstname=db.Column(db.String())
+    lastname=db.Column(db.String())
+    password=db.Column(db.String())
+    email=db.Column(db.String())
+
 
     def __repr__(self):
         return '<id {}>'.format(self.id)
@@ -35,11 +33,14 @@ class User(db.Model):
     def serialize(self):
         return{
             'id':self.id,
-            'apikey':self.apikey,
             'username':self.username,
-            'first_name':self.first_name,
-            'last_name':self.last_name,
+            'firstname':self.firstname,
+            'lastname':self.lastname,
             'password':self.password,
-            'emailaddress':self.emailaddress
-
+            'email':self.email,
+           
+            
               }
+    
+    def get(self):
+        return {"message": "Hello, World!"}
