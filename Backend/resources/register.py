@@ -2,6 +2,10 @@ from flask.signals import request_started
 from flask_restful import Resource 
 from models import db, User
 from flask import request
+import random
+import string
+
+
 
 class Register(Resource):
     def get(self):
@@ -20,15 +24,20 @@ class Register(Resource):
         user = User.query.filter_by(username=json_data['username']).first()
         if user:
             return {'message': 'User with same username already exists'}, 400
+
         user = User.query.filter_by(email=json_data['email']).first()
         if user:
             return {'message': 'User with same Email already exists'}, 400
-        #username, email,password
-        #check if username exists
-        # check if the email exists
-        # create a user
-        # create an apikey
+        
+        api_key=self.generate_key()
+        
+        user = User.query.filter_by(api_key=api_key).first() 
+        
+        if user:
+            return {"message":"Api key already exists"},400
+        
         user = User(
+            api_key=api_key,
             firstname=json_data['firstname'],
             lastname=json_data['lastname'],
             email=json_data['email'],
@@ -43,6 +52,7 @@ class Register(Resource):
 
         return { "status": 'success', 'data': result }, 201
         
-        # return {"message":"Posting {}".format(username)}
-
+     
+    def generate_key(self):
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(50))
      
