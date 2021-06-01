@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:todoapp/UI/Login/loginscreen.dart';
 import 'models/global.dart';
 import 'package:todoapp/UI/Intray/intray_page.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:todoapp/models/classes/user.dart';
+import 'bloc/blocs/user_bloc_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,39 +15,19 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Todo App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: FutureBuilder(
-        
-        builder: (BuildContext context,AsyncSnapshot<String> snapshot){
-          switch(snapshot.connectionState){
-            case ConnectionState.none:
-              return Text('Press Button to start.');
-            case ConnectionState.active:
-            case ConnectionState.waiting:
-              return Text('Awaiting Result');
-            case ConnectionState.done:
-              if(snapshot.hasError) 
-              return Text('Error:${snapshot.error}');
-
-          }
-          return null;
-        },
-      ),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'Todo App',
+        theme: ThemeData(
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: MyHomePage());
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
@@ -51,6 +35,48 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: getApiKey(),
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        String apiKey = "";
+        if (snapshot.hasData) {
+          apiKey = snapshot.data;
+        } else {
+          print("There is no data");
+        }
+        // String apiKey = snapshot.data;
+        // apiKey.length > 0 ? getHomePage() :
+        return apiKey.length > 0
+            ? getHomePage()
+            : LoginPage(login: login, newUser: false,);
+      },
+    );
+  }
+
+  void login() {
+    setState() {
+      build(context);
+    }
+  }
+
+
+  Future getApiKey() async {
+    print("hello");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    print(prefs);
+    return await prefs.getString("API_Token");
+
+    // String apiKey;
+    // try {
+    //   apiKey = prefs.getString('API_Token');
+    // } catch (Exception) {
+    //   apiKey = "";
+    //   // await prefs.setString('API_Token', apiKey);
+    // }
+    // return apiKey;
+  }
+
+  Widget getHomePage() {
     return MaterialApp(
       color: Colors.yellow,
       home: SafeArea(
@@ -65,6 +91,14 @@ class _MyHomePageState extends State<MyHomePage> {
                     color: Colors.orange,
                   ),
                   new Container(
+                    child: Center(
+                        child: FlatButton(
+                      color: Colors.red,
+                      child: Text("Log out"),
+                      onPressed: () {
+                        logout();
+                      },
+                    )),
                     color: Colors.lightGreen,
                   ),
                 ],
@@ -127,5 +161,18 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
     );
+  }
+
+  logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString("API_Token", "");
+    setState(() {
+      build(context);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
   }
 }
