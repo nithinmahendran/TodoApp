@@ -8,8 +8,11 @@ class Repository {
           String password, String email) =>
       apiProvider.registerUser(username, firstname, lastname, password, email);
 
-    Future<User> signinUser(String username,String password) =>
-      apiProvider.signinUser(username,password);
+    Future signinUser(String username,String password,String apiKey) =>
+      apiProvider.signinUser(username,password,apiKey);
+
+       Future getUserTasks(String apiKey) =>
+      apiProvider.getUserTasks(apiKey);
 }
 
 

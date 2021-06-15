@@ -1,3 +1,5 @@
+import 'package:todoapp/models/classes/task.dart';
+
 import '../resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:todoapp/models/classes/user.dart';
@@ -15,9 +17,8 @@ class UserBloc {
     _userGetter.sink.add(user);
   }
 
-  signinUser(String username, String password) async {
-    User user = await _repository.signinUser(
-        username,password);
+  signinUser(String username, String password, String apiKey) async {
+    User user = await _repository.signinUser(username, password, apiKey);
     _userGetter.sink.add(user);
   }
 
@@ -26,4 +27,29 @@ class UserBloc {
   }
 }
 
-final bloc = UserBloc();
+class TaskBloc {
+  final _repository = Repository();
+  final _taskSubject = BehaviorSubject<List<Task>>();
+  String apiKey;
+
+  var _tasks = <Task>[];
+
+  TaskBloc(String api_key) {
+    this.apiKey = api_key; 
+    _updateTasks(api_key).then((_) {
+      _taskSubject.add(_tasks);
+    });
+  }
+
+
+  Stream<List<Task>> get getTasks => _taskSubject.stream;
+
+  // Observable<List<Task>> get getUser => _taskGetter.stream;
+
+  Future<List<Task>> _updateTasks(String apiKey) async {
+    return await _repository.getUserTasks(apiKey);
+  }
+}
+
+// final tasksBloc = TaskBloc();
+final userBloc = UserBloc();

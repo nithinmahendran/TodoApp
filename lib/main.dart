@@ -15,7 +15,6 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Todo App',
@@ -33,12 +32,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String apiKey = "";
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getApiKey(),
+      future: signinUser(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
-        String apiKey = "";
         if (snapshot.hasData) {
           apiKey = snapshot.data;
         } else {
@@ -48,7 +47,10 @@ class _MyHomePageState extends State<MyHomePage> {
         // apiKey.length > 0 ? getHomePage() :
         return apiKey.length > 0
             ? getHomePage()
-            : LoginPage(login: login, newUser: false,);
+            : LoginPage(
+                login: login,
+                newUser: false,
+              );
       },
     );
   }
@@ -59,21 +61,26 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Future signinUser() async {
+    String userName = "";
+    apiKey = await getApiKey();
+    if (apiKey != null) {
+      if (apiKey.length > 0) {
+        userBloc.signinUser("", "", apiKey);
+      } else {
+        print("No Api Key");
+      }
+    } else {
+      apiKey = "";
+    }
+
+    return apiKey;
+  }
 
   Future getApiKey() async {
-    print("hello");
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    print(prefs);
-    return await prefs.getString("API_Token");
 
-    // String apiKey;
-    // try {
-    //   apiKey = prefs.getString('API_Token');
-    // } catch (Exception) {
-    //   apiKey = "";
-    //   // await prefs.setString('API_Token', apiKey);
-    // }
-    // return apiKey;
+    return await prefs.getString("API_Token");
   }
 
   Widget getHomePage() {
@@ -86,7 +93,9 @@ class _MyHomePageState extends State<MyHomePage> {
             body: Stack(children: [
               TabBarView(
                 children: [
-                  IntrayPage(),
+                  IntrayPage(
+                    apiKey: apiKey,
+                  ),
                   new Container(
                     color: Colors.orange,
                   ),
