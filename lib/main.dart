@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:todoapp/UI/Login/loginscreen.dart';
+import 'package:todoapp/bloc/resources/repository.dart';
 import 'models/global.dart';
 import 'package:todoapp/UI/Intray/intray_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,6 +21,7 @@ class MyApp extends StatelessWidget {
         title: 'Todo App',
         theme: ThemeData(
           primarySwatch: Colors.blue,
+          dialogBackgroundColor: Colors.transparent,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         home: MyHomePage());
@@ -33,6 +35,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String apiKey = "";
+  TaskBloc tasksBloc;
+  Repository _repository = Repository();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -40,6 +44,7 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           apiKey = snapshot.data;
+          tasksBloc = TaskBloc(apiKey);
         } else {
           print("There is no data");
         }
@@ -137,7 +142,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 margin: EdgeInsets.only(
                     top: 131, left: MediaQuery.of(context).size.width * 0.43),
                 child: FloatingActionButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _showAddDialog();
+                  },
                   child: Icon(Icons.add),
                   backgroundColor: addButtonColor,
                 ),
@@ -183,5 +190,87 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void addTask(String taskName, String taskDeadline) async {
+    await _repository.addUserTask(this.apiKey, taskName, taskDeadline);
+  }
+
+  void _showAddDialog() {
+    TextEditingController taskName = new TextEditingController();
+    TextEditingController taskDeadline = new TextEditingController();
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: Container(
+              constraints: BoxConstraints.expand(height: 250),
+              padding: EdgeInsets.all(20.0),
+              height: 250,
+              width: 300,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10.0),
+                color: darkGrey,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text('Add New Task', style: whiteTodoTitle),
+                  Container(
+                    child: TextField(
+                      controller: taskName,
+                      decoration: InputDecoration(
+                        hintText: "Name of Task",
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                  Container(
+                    child: TextField(
+                      controller: taskDeadline,
+                      decoration: InputDecoration(
+                        hintText: "Deadline",
+                        enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(color: Colors.white)),
+                      ),
+                    ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      RaisedButton(
+                        color: addButtonColor,
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Cancel",
+                          style: whiteButtonTitle,
+                        ),
+                      ),
+                      RaisedButton(
+                        color: addButtonColor,
+                        onPressed: () {
+                          if (taskName.text != null) {
+                            addTask(taskName.text, taskDeadline.text);
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: Text(
+                          "Add",
+                          style: whiteButtonTitle,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        });
   }
 }

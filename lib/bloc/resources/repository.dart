@@ -8,12 +8,13 @@ class Repository {
           String password, String email) =>
       apiProvider.registerUser(username, firstname, lastname, password, email);
 
-    Future signinUser(String username,String password,String apiKey) =>
-      apiProvider.signinUser(username,password,apiKey);
+  Future signinUser(String username, String password, String apiKey) =>
+      apiProvider.signinUser(username, password, apiKey);
 
-       Future getUserTasks(String apiKey) =>
-      apiProvider.getUserTasks(apiKey);
+  Future getUserTasks(String apiKey) => apiProvider.getUserTasks(apiKey);
+
+  Future<Null> addUserTask(
+      String apiKey, String taskName, String taskDeadline) async {
+    apiProvider.addUserTask(apiKey, taskName, taskDeadline);
+  }
 }
-
-
-

@@ -45,23 +45,6 @@ class _IntrayPageState extends State<IntrayPage> {
           }
         },
       ),
-      // child: FutureBuilder(
-      //   future: getList(),
-      //   builder: (BuildContext context, AsyncSnapshot snapshot) {
-      //     if (snapshot.hasData) {
-      //       return _buildReorderableListSimple(context, taskList);
-      //     }
-
-      // if (snapshot.connectionState == ConnectionState.none &&
-      //     snapshot.hasData == null) {
-      //   return Container();
-      // }
-      // return ListView.builder(
-      //     itemBuilder: (context, index) {
-      //       taskList = snapshot.data;
-      //       return _buildReorderableListSimple(context, taskList);
-      //     },
-      //     itemCount: snapshot.data.length);
     );
   }
 
@@ -77,13 +60,9 @@ class _IntrayPageState extends State<IntrayPage> {
     return Theme(
       data: ThemeData(canvasColor: Colors.transparent),
       child: ReorderableListView(
-        // handleSide: ReorderableListSimpleSide.Right,
-        // handleIcon: Icon(Icons.access_alarm),
-
         padding: EdgeInsets.only(top: 300.0),
         children:
             taskList.map((Task item) => _buildListTile(context, item)).toList(),
-
         onReorder: (oldIndex, newIndex) {
           setState(() {
             Task item = taskList[oldIndex];
@@ -109,4 +88,5 @@ class _IntrayPageState extends State<IntrayPage> {
   //   List<Task> tasks = await tasksBloc.getUserTasks(widget.apiKey);
   //   return tasks;
   // }
+
 }

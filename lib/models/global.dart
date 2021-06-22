@@ -37,3 +37,15 @@ TextStyle blueBoldText = new TextStyle(
 
 TextStyle blueText =
     new TextStyle(fontFamily: 'Poppins', color: addButtonColor, fontSize: 20);
+
+TextStyle whiteTodoTitle = new TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+    fontSize: 24);
+
+TextStyle whiteButtonTitle = new TextStyle(
+    fontFamily: 'Poppins',
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+    fontSize: 15);
